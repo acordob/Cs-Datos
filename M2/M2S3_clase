@@ -1,0 +1,53 @@
+nombres_estudiantes =[]
+promedio_estudiantes = []
+comentarios = []
+while True:
+    nombre=input("Ingrese nombre del alumno o salir para finalizar el programa")
+    if nombre.lower() == "salir":
+        break
+    calificacion=float(input("Ingrese calificación"))
+    if calificacion >= 60:
+        print("Aprobado")
+    else:
+        print("No aprobado")
+    materias =["Matemáticas", "Ciencias", "Inglés"]
+    notas=[]
+    
+    for materia in materias:
+        while True:
+            try:
+                nota = float(input(f"Ingrese la calificación de {materia} 0-100: "))
+                if 0<=nota<=100:
+                    notas.append(nota)
+                    break
+                else:
+                    print("La calificación debe estar entre 0 y 100")
+            except ValueError:
+                print("Ingresaste un valor inválido")
+    promedio=sum(notas)/len(materias)
+    print(f"El promedio es: {promedio}")
+    if promedio >=90:
+        comentario="Excelente"
+    elif promedio >=75:
+        comentario="Bueno"
+    else:
+        comentario="Necesita mejorar"
+    print(f"El estudiante: {nombre} corresponde a un promedio: {comentario}")
+    
+    comentario_perf = " ¡Puntuación perfecta!" if promedio == 100 else ""
+    comentario_final = comentario + comentario_perf
+
+
+    promedio_estudiantes.append(promedio)
+    comentarios.append(comentario_final)
+    nombres_estudiantes.append(nombre)
+    
+    print("\n" + "--"*30)
+    print("Lista Estudiantes:")
+    print("--"*30)
+
+    for i, nombre in enumerate(nombres_estudiantes, 1):
+        print(f"{i}. {nombre}- Promedio: {promedio_estudiantes[i-1]: .1f} - {comentarios[i-1]}")
+    
+    print(f"\nTotal: {len(nombres_estudiantes)} estudiantes")
+    

@@ -1,0 +1,103 @@
+# EVALUACIÓN FINAL MODULO 4: ANÁLISIS DE DATOS DE ATLETAS OLÍMPICOS
+# Alumna: Alejandra Córdoba Sepúlveda
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import statsmodels.api as sm
+from scipy import stats
+
+# Carga y muestra del dataset
+df = pd.read_csv("olimpicos.csv")
+
+print("-- Primeras filas del dataset --")
+print(df.head(), "\n")
+
+print("-- Información del dataset --")
+print(df.info(), "\n")
+
+print("-- Estadísticas descriptivas --")
+print(df.describe(), "\n")
+
+# Histograma de entrenamientos por semana
+plt.figure(figsize=(10, 6))
+plt.hist(df['Entrenamientos_Semanales'], bins=10, color="skyblue")
+plt.title("Distribución de entrenamientos semanales")
+plt.xlabel("Entrenamientos semanales")
+plt.ylabel("Frecuencia")
+plt.show()
+
+# Ver tipo de datos
+print("-- Tipos de datos --")
+print(df.dtypes)
+
+# Media, mediana y moda en Medallas Totales
+print("Media:", df['Medallas_Totales'].mean())
+print("Mediana:", df['Medallas_Totales'].median())
+print("Moda:", df['Medallas_Totales'].mode())
+
+# Desviación estándar
+print("Desviación estándar:", df['Altura_cm'].std())
+
+# Boxplot para detectar outliers en peso
+plt.figure(figsize=(10, 6))
+sns.boxplot(x=df['Peso_kg'], color='blue')
+plt.title("Boxplot de peso de los Atletas")
+plt.xlabel("Peso kg")
+plt.show()
+
+# Correlación de Pearson
+correlacion = df['Entrenamientos_Semanales'].corr(df['Medallas_Totales'])
+print("Correlación de Pearson:", correlacion) # Correlación Positiva moderada
+
+# Scatterplot entre peso y medallas
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=df['Peso_kg'], y=df['Medallas_Totales'], data=df, color='blue')
+plt.title("Peso vs Medallas")
+plt.xlabel("Peso kg")
+plt.ylabel("Medallas")
+plt.show() # No hay correlacion
+
+# Regresión Lineal
+X = df['Entrenamientos_Semanales']
+y = df['Medallas_Totales']
+X = sm.add_constant(X) # Agrega intercepto
+
+modelo = sm.OLS(y, X).fit()
+print(modelo.summary())
+
+# Coeficientes
+coef_intercepto = modelo.params[0]
+coef_entrenamientos = modelo.params[1]
+print("Coeficientes:")
+print("Intercepto:", coef_intercepto)
+print("Entrenamientos semanales:", coef_entrenamientos) #Por cada entrenamiento semanal adicional, se obtiene 2 medalla adicional.
+
+#R2
+r_cuadrado = modelo.rsquared
+print(f"R: {r_cuadrado: .3f}") # Modelo explica que un 32% de variabilidad de las medallas es explicada por el modelo
+
+# Visualización del modelo de Regresión Lineal
+plt.figure(figsize=(10, 6))
+sns.regplot(x=df['Entrenamientos_Semanales'], y=df['Medallas_Totales'], data=df, scatter_kws={"color": "skyblue"}, line_kws={"color": "red"})
+plt.title("Regresión Lineal: Entrenamiento Vs Medallas")
+plt.xlabel("Entrenamientos semanales")
+plt.ylabel("Medallas totales")
+plt.show()
+
+
+# Visualización de datos con heatmap
+plt.figure(figsize=(10, 6))
+correlation_matrix = df.select_dtypes(include=[np.number]).corr()
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", center=0, linewidths=0.5)
+plt.title("Mapa de Calor de Correlación")
+plt.show()
+
+# Visualización de datos con boxplot de medallas por disciplina
+plt.figure(figsize=(10, 6))
+sns.boxplot(x=df['Deporte'], y=df['Medallas_Totales'], data=df)
+plt.title("Medallas por Disciplina")
+plt.xlabel("Disciplina")
+plt.ylabel("Medallas")
+plt.show()

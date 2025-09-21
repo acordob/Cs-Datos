@@ -1,0 +1,59 @@
+import pandas as pd
+import numpy as np
+
+# 1. Limpieza y Transformación de Datos
+df = pd.read_csv("migracion.csv.csv")
+
+# Eliminar valores nulos
+df = df.dropna()
+
+# Filtrar outliers con IQR
+Q1 = df["Cantidad_Migrantes"].quantile(0.25)
+Q3 = df["Cantidad_Migrantes"].quantile(0.75)
+IQR = Q3 - Q1
+df = df[(df["Cantidad_Migrantes"] >= Q1 - 1.5 * IQR) & (df["Cantidad_Migrantes"] <= Q3 + 1.5 * IQR)]
+
+# Reemplazar valores en Razon_Migracion
+mapa_razon = {
+    "Económica": "Trabajo",
+    "Conflicto": "Guerra",
+    "Educativa": "Estudios",
+    "Familiar": "Reunión"
+}
+df["Razon_Migracion"] = df["Razon_Migracion"].map(mapa_razon)
+
+# 2. Análisis Exploratorio
+print(df.head())
+print(df.info())
+print(df.describe())
+
+print("Media migrantes:", df["Cantidad_Migrantes"].mean())
+print("Mediana migrantes:", df["Cantidad_Migrantes"].median())
+print("PIB promedio origen:", df["PIB_Origen"].mean())
+print("PIB promedio destino:", df["PIB_Destino"].mean())
+print("Razón Migración:")
+print(df["Razon_Migracion"].value_counts())
+
+# 3. Agrupamiento y Sumarización
+print("\nMigrantes por Razón Migración:")
+print(df.groupby("Razon_Migracion")["Cantidad_Migrantes"].sum())
+
+print("\nIDH promedio por Razón Migración:")
+print(df.groupby("Razon_Migracion")["IDH_Origen"].mean())
+
+df = df.sort_values(by="Cantidad_Migrantes", ascending=False)
+
+# 4. Filtros y Selección
+conflictos = df[df["Razon_Migracion"] == "Guerra"]
+print("\nMigraciones por Conflicto:")
+print(conflictos)
+
+idh_alto = df[df["IDH_Destino"] > 0.90]
+print("\nMigraciones con IDH destino > 0.90:")
+print(idh_alto)
+
+df["Diferencia_IDH"] = df["IDH_Destino"] - df["IDH_Origen"]
+
+# 5. Exportación
+df.to_csv("Migracion_Limpio.csv.csv", index=False)
+
