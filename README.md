@@ -1,5 +1,5 @@
 # Proyectos-de-Preparacion-de-Datos
-Proyectos de obtención y preparación de datos
+Proyectos de obtención y preparación de datos con Numpy y Pandas en Python.
 
 ## Descripción del Proyecto
 En este proyecto se realiza un análisis de patrones migratorios utilizando técnicas con Python.
